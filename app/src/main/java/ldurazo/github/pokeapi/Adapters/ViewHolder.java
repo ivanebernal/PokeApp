@@ -24,6 +24,12 @@ public class ViewHolder extends RecyclerView.ViewHolder {
 
     public void setData(String pokemonName, String sprite){
         mTextViewName.setText(pokemonName);
-        if(sprite != null) Picasso.with(itemView.getContext()).load("https://pokeapi.co/" + sprite).into(mImageView);
+        Picasso mPicasso = Picasso.with(itemView.getContext());
+        mPicasso.setIndicatorsEnabled(true);
+        if(sprite != null){
+            mPicasso.load("https://pokeapi.co/" + sprite).placeholder(R.drawable.no_poke_symbol).into(mImageView);
+        }else{
+            mPicasso.load(R.drawable.no_poke_symbol).into(mImageView);
+        }
     }
 }

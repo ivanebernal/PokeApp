@@ -66,7 +66,8 @@ public class PokeListFragment extends android.support.v4.app.Fragment {
         View view = inflater.inflate(R.layout.fragment_poke_list, container, false);
         Activity activity = (Activity) view.getContext();
         RecyclerView listView = (RecyclerView) view.findViewById(R.id.list_view);
-        listView.setAdapter(new PokemonAdapter(activity , mPokemonUris));
+        listView.setHasFixedSize(true);
+        listView.setAdapter(new PokemonAdapter(activity , mPokemonUris.subList(0, 30)));
         listView.setLayoutManager(new GridLayoutManager(activity, 3));
         return view;
     }

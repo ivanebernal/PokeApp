@@ -33,7 +33,7 @@ public class CacheFiller {
     public static class PokemonResourcesDownloader extends AsyncTask<List<PokemonUri>, Integer, Void>{
 
         private Context mContext;
-
+        private ContextWrapper cw;
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
@@ -42,18 +42,22 @@ public class CacheFiller {
 
         public PokemonResourcesDownloader(Context context){
             mContext = context;
+            cw = new ContextWrapper(context);
         }
 
         @Override
         protected Void doInBackground(List<PokemonUri>... pokeUri) {
         for(int i = 0; i < 151; i++) {
-            try {
-                URL url = new URL("http://pokeapi.co/media/sprites/pokemon/" + (i+1) + ".png");
-                Bitmap pokeImage = getBitmap(url);
-                saveToInternalStorage(pokeImage, mContext, ((i+1)+".png"));
-                Log.d("File", "File saved");
-            } catch (IOException e) {
-                e.printStackTrace();
+            File f = new File(cw.getFilesDir(), (i + 1) + ".png");
+            if (!f.exists()) {
+                try {
+                    URL url = new URL("http://pokeapi.co/media/sprites/pokemon/" + (i + 1) + ".png");
+                    Bitmap pokeImage = getBitmap(url);
+                    saveToInternalStorage(pokeImage, ((i + 1) + ".png"));
+                    Log.d("File", "File saved");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
             return null;
@@ -63,8 +67,7 @@ public class CacheFiller {
             return Bitmap.createScaledBitmap(BitmapFactory.decodeStream((InputStream) url.getContent()), 480, 480, true);
         }
 
-        protected String saveToInternalStorage(Bitmap pokeImage, Context context, String name) throws IOException {
-            ContextWrapper cw = new ContextWrapper(context);
+        protected String saveToInternalStorage(Bitmap pokeImage, String name) throws IOException {
             File directory = cw.getFilesDir();
             File path = new File(directory, name);
 

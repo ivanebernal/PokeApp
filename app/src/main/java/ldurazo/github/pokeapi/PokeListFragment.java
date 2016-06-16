@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import ldurazo.github.pokeapi.Adapters.PokemonAdapter;
+import ldurazo.github.pokeapi.Models.Pokedex;
 import ldurazo.github.pokeapi.Models.Pokemon;
 import ldurazo.github.pokeapi.Models.PokemonUri;
 
@@ -29,7 +30,7 @@ import ldurazo.github.pokeapi.Models.PokemonUri;
  * create an instance of this fragment.
  */
 public class PokeListFragment extends android.support.v4.app.Fragment {
-    private static List<PokemonUri> mPokemonUris;
+    private static Pokedex mPokedex;
     // TODO: Rename parameter arguments, choose names that match
 
     private OnPokemonSelected mListener;
@@ -40,9 +41,9 @@ public class PokeListFragment extends android.support.v4.app.Fragment {
      * @return A new instance of fragment PokeListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PokeListFragment newInstance(List<PokemonUri> pokemonUris) {
+    public static PokeListFragment newInstance(Pokedex pokedex) {
         PokeListFragment fragment = new PokeListFragment();
-        mPokemonUris = pokemonUris;
+        mPokedex = pokedex;
         //Bundle args = new Bundle();
         //fragment.setArguments(args);
         return fragment;
@@ -67,7 +68,7 @@ public class PokeListFragment extends android.support.v4.app.Fragment {
         Activity activity = (Activity) view.getContext();
         RecyclerView listView = (RecyclerView) view.findViewById(R.id.list_view);
         listView.setHasFixedSize(true);
-        listView.setAdapter(new PokemonAdapter(activity , mPokemonUris.subList(0, 30)));
+        listView.setAdapter(new PokemonAdapter(activity , mPokedex));
         listView.setLayoutManager(new GridLayoutManager(activity, 3));
         return view;
     }

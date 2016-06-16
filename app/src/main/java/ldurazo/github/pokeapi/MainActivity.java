@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements PokeListFragment.
                 pokeFileDownloader.execute(pokedex.getPokemonUri());
                 getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.main_layout, PokeListFragment.newInstance(pokedex.getPokemonUri()), "pokemonList" )
+                            .replace(R.id.main_layout, PokeListFragment.newInstance(pokedex), "pokemonList" )
                             .commit();
             }
 
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements PokeListFragment.
                 .beginTransaction()
                 .replace(R.id.main_layout, PokemonDetailsFragment.newInstance(pokemon, this), "detailsFragment")
                 .addToBackStack(null)
-                .commit();
+                .commitAllowingStateLoss();
 
     }
 

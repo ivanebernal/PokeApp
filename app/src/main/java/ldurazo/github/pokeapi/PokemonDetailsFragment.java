@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -78,6 +79,8 @@ public class PokemonDetailsFragment extends Fragment {
         mPokemonNumber = pokemon.getNationalId().toString();
         if(mPokemonNumber.length() == 2) mPokemonNumberCry = "0" + mPokemonNumber;
         if(mPokemonNumber.length() == 1) mPokemonNumberCry = "00" + mPokemonNumber;
+        if(mPokemonNumber.length() == 3) mPokemonNumberCry = mPokemonNumber;
+
         return fragment;
     }
 
@@ -111,8 +114,6 @@ public class PokemonDetailsFragment extends Fragment {
                 if(cryResId != 0){
                     mCryPlayer = MediaPlayer.create(view.getContext(), cryResId);
                     mCryPlayer.start();
-                    while (mCryPlayer.isPlaying());
-                    mCryPlayer.release();
                 }
             }
         });
@@ -160,6 +161,11 @@ public class PokemonDetailsFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        if(mCryPlayer!=null) {
+            mCryPlayer.reset();
+            mCryPlayer.release();
+            mCryPlayer = null;
+        }
     }
 
     /**

@@ -34,8 +34,8 @@ public class PokemonAdapter extends RecyclerView.Adapter<ViewHolder>{
     private List<PokemonUri> mPokemonList;
     private Context mContext;
 
-    public PokemonAdapter(Context context, List<PokemonUri> pokemonUri){
-        mPokemonList = pokemonUri;
+    public PokemonAdapter(Context context, Pokedex pokedex){
+        mPokemonList = pokedex.getPokemonUri().subList(0,150);
         mContext = context;
         mListener = (PokeListFragment.OnPokemonSelected) context;
     }
@@ -58,35 +58,10 @@ public class PokemonAdapter extends RecyclerView.Adapter<ViewHolder>{
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        final int pokeNum = holder.getAdapterPosition()+1;
-        final Call<Pokemon> pokeCall = pokeApiService.getPokemon(pokeNum);
-        pokeCall.enqueue(new Callback<Pokemon>() {
-            @Override
-            public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
-                final Pokemon pokemon = response.body();
-                List<SpriteUri> spriteUris = pokemon.getSpriteUris();
-                SpriteUri lastSpriteUri;
-                if(spriteUris.size() != 0){
-                    lastSpriteUri = spriteUris.get(spriteUris.size()-1);
-                    Call<Sprite> pokeCallSprite = pokeApiService.getSprite(lastSpriteUri.getResourceUri().substring(1));
-                    pokeCallSprite.enqueue(new Callback<Sprite>() {
-                        @Override
-                        public void onResponse(Call<Sprite> call, Response<Sprite> response) {
-                            holder.setData(pokemon.getName(), response.body().getImage());
-                        }
-
-                        @Override
-                        public void onFailure(Call<Sprite> call, Throwable t) {
-                            t.getCause();
-                        }
-                    });
-                }
-            }
-            @Override
-            public void onFailure(Call<Pokemon> call, Throwable t) {
-                t.getCause();
-            }
-        });
+        String pokemonName = mPokemonList.get(position).getName();
+        pokemonName = pokemonName.substring(0,1).toUpperCase().concat(pokemonName.substring(1));
+        final int pokeNum = position + 1;
+        holder.setData(pokemonName, pokeNum, mContext);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,25 +82,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<ViewHolder>{
             @Override
             public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
                 final Pokemon pokemon = response.body();
-                List<SpriteUri> spriteUris = pokemon.getSpriteUris();
-                SpriteUri lastSpriteUri;
-                if(spriteUris.size() != 0){
-                    lastSpriteUri = spriteUris.get(spriteUris.size()-1);
-                    Call<Sprite> pokeCallSprite = pokeApiService.getSprite(lastSpriteUri.getResourceUri().substring(1));
-                    pokeCallSprite.enqueue(new Callback<Sprite>() {
-                        @Override
-                        public void onResponse(Call<Sprite> call, Response<Sprite> response) {
-                            String sprite = response.body().getImage();
-                            mListener.onPokemonSelected(pokemon, sprite);
-                        }
-                        @Override
-                        public void onFailure(Call<Sprite> call, Throwable t) {
-                            t.getCause();
-                        }
-                    });
-                }else{
-                    mListener.onPokemonSelected(pokemon, null);
-                }
+                            mListener.onPokemonSelected(pokemon);
             }
             @Override
             public void onFailure(Call<Pokemon> call, Throwable t) {
@@ -137,6 +94,6 @@ public class PokemonAdapter extends RecyclerView.Adapter<ViewHolder>{
     @Override
     public void onViewRecycled(ViewHolder holder) {
         super.onViewRecycled(holder);
-        holder.setData("", null);
+        holder.setData("", 0, mContext);
     }
 }

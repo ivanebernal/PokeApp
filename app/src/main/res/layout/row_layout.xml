@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         style="@style/Base.TextAppearance.AppCompat.Subhead.Inverse"
         android:background="@color/blue_grey_800_50p"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         android:gravity="center"
         android:layout_alignBottom="@id/grid_poke_image"

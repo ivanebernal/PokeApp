@@ -1,5 +1,9 @@
 package ldurazo.github.pokeapi.Adapters;
 
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -7,6 +11,11 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileInputStream;
+
+import ldurazo.github.pokeapi.MainActivity;
+import ldurazo.github.pokeapi.PokemonDetailsFragment;
 import ldurazo.github.pokeapi.R;
 
 /**
@@ -22,14 +31,27 @@ public class ViewHolder extends RecyclerView.ViewHolder {
         mTextViewName = (TextView)itemView.findViewById(R.id.pokemon_name);
     }
 
-    public void setData(String pokemonName, String sprite){
+    public void setData(String pokemonName, int nationalId, Context context){
         mTextViewName.setText(pokemonName);
-        Picasso mPicasso = Picasso.with(itemView.getContext());
-        mPicasso.setIndicatorsEnabled(true);
-        if(sprite != null){
-            mPicasso.load("https://pokeapi.co/" + sprite).placeholder(R.drawable.no_poke_symbol).into(mImageView);
+        String pokeFileName = nationalId + ".png";
+        if(nationalId!= 0) {
+            Bitmap pokeBitmap = getPokeImage(pokeFileName, context);
+            mImageView.setImageBitmap(pokeBitmap);
         }else{
-            mPicasso.load(R.drawable.no_poke_symbol).into(mImageView);
+            mImageView.setImageResource(R.drawable.no_poke_symbol);
+        }
+        //TODO: load images from the internet if they don't exist in the files directory
+
+        //TODO: images are being painted too slow and sometimes show wrong pokemon
+    }
+
+    public Bitmap getPokeImage(String pokeFileName, Context context){
+        ContextWrapper cw = new ContextWrapper(context);
+        try{
+            File f = new File(cw.getFilesDir(), pokeFileName);
+            return BitmapFactory.decodeStream(new FileInputStream(f));
+        }catch (Exception e){
+            return null;
         }
     }
 }

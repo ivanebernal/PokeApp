@@ -2,7 +2,9 @@ package ldurazo.github.pokeapi;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -18,9 +20,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -50,9 +55,10 @@ public class PokemonDetailsFragment extends Fragment {
     private static List<Ability> mPokemonAbilities;
     private static List<Type> mPokemonTypes;
     private static List<Move> mPokemonMoves;
-    private static String mPokemonSprite;
+    private static Context mContext;
     private static String mPokemonNumber;
     private static MediaPlayer mCryPlayer;
+    private static String mPokemonNumberCry;
 
     // TODO: Rename and change types of parameters
 
@@ -63,19 +69,26 @@ public class PokemonDetailsFragment extends Fragment {
     }
 
     // TODO: Rename and change types and number of parameters
-    public static PokemonDetailsFragment newInstance(Pokemon pokemon, String pokeSprite) {
+    public static PokemonDetailsFragment newInstance(Pokemon pokemon, Context context) {
         PokemonDetailsFragment fragment = new PokemonDetailsFragment();
         mPokemonName = pokemon.getName();
         mPokemonAbilities = pokemon.getAbilities();
         mPokemonTypes = pokemon.getTypes();
         mPokemonMoves = pokemon.getMoves();
-        mPokemonSprite = pokeSprite;
+        mContext = context;
         mPokemonNumber = pokemon.getNationalId().toString();
-        if(mPokemonNumber.length() == 2) mPokemonNumber = "0" + mPokemonNumber;
-        if(mPokemonNumber.length() == 1) mPokemonNumber = "00" + mPokemonNumber;
+        if(mPokemonNumber.length() == 2) mPokemonNumberCry = "0" + mPokemonNumber;
+        if(mPokemonNumber.length() == 1) mPokemonNumberCry = "00" + mPokemonNumber;
+        if(mPokemonNumber.length() == 3) mPokemonNumberCry = mPokemonNumber;
+
         return fragment;
     }
 
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,7 +106,7 @@ public class PokemonDetailsFragment extends Fragment {
             public void onClick(View v) {
                 int cryResId = 0;
                 try {
-                    Field cryResField = R.raw.class.getDeclaredField("r"+ mPokemonNumber);
+                    Field cryResField = R.raw.class.getDeclaredField("r"+ mPokemonNumberCry);
                     cryResId = cryResField.getInt(cryResField);
                 } catch (NoSuchFieldException | IllegalAccessException e) {
                     e.printStackTrace();
@@ -112,10 +125,11 @@ public class PokemonDetailsFragment extends Fragment {
             typeTextView.setGravity(Gravity.CENTER);
             typesListView.addView(typeTextView);
         }
-        if(mPokemonSprite == null){
+        Bitmap pokeImage = getPokeImage(mPokemonNumber + ".png");
+        if(pokeImage == null){
             Picasso.with(view.getContext()).load(R.drawable.no_poke_symbol).resize(480,480).into(pokeSpriteView);
         }else{
-            Picasso.with(view.getContext()).load("https://pokeapi.co/" + mPokemonSprite).resize(480,480).into(pokeSpriteView);
+            pokeSpriteView.setImageBitmap(pokeImage);
         }
 
         nameTextView.setText(mPokemonName);
@@ -147,6 +161,11 @@ public class PokemonDetailsFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        if(mCryPlayer!=null) {
+            mCryPlayer.reset();
+            mCryPlayer.release();
+            mCryPlayer = null;
+        }
     }
 
     /**
@@ -162,5 +181,15 @@ public class PokemonDetailsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public Bitmap getPokeImage(String pokeFileName){
+        ContextWrapper cw = new ContextWrapper(mContext);
+        try{
+            File f = new File(cw.getFilesDir(), pokeFileName);
+            return BitmapFactory.decodeStream(new FileInputStream(f));
+        }catch (Exception e){
+            return null;
+        }
     }
 }

@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.LruCache;
+import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 
@@ -35,11 +36,14 @@ public class MainActivity extends AppCompatActivity implements PokeListFragment.
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+
+        //TODO: Loading screen while images are being downloaded (use onProgressUpdate)
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final Pokedex pokedex = new Pokedex();
         final PokeApiService pokeApiService = mPokeApiTransport.getRetrofit().create(PokeApiService.class);
         Call<Pokedex> pokedexCall = pokeApiService.getPokedex();
+        final CacheFiller.PokemonResourcesDownloader pokeFileDownloader = new CacheFiller.PokemonResourcesDownloader(this);
         pokedexCall.enqueue(new Callback<Pokedex>() {
             @Override
             public void onResponse(Call<Pokedex> call, Response<Pokedex> response) {
@@ -49,19 +53,11 @@ public class MainActivity extends AppCompatActivity implements PokeListFragment.
                 pokedex.setPokemonUri(response.body().getPokemonUri());
                 pokedex.setResourceUri(response.body().getResourceUri());
                 Collections.sort(pokedex.getPokemonUri());
+                pokeFileDownloader.execute(pokedex.getPokemonUri());
                 getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.main_layout, PokeListFragment.newInstance(pokedex.getPokemonUri()), "pokemonList" )
                             .commit();
-                /*new AsyncTask<LruCache<Integer, Bitmap>, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(LruCache<Integer, Bitmap>... params) {
-                        for(PokemonUri pokeUri : pokedex.getPokemonUri()){
-                            populatePokeImages(pokeUri, mPokeImages);
-                        }
-                        return null;
-                    }
-                }.execute();*/
             }
 
             @Override
@@ -71,56 +67,12 @@ public class MainActivity extends AppCompatActivity implements PokeListFragment.
         });
 
     }
-
-    private void populatePokeImages(PokemonUri pokeUri, LruCache pokeImages) {
-        final PokeApiService pokeApiService = mPokeApiTransport.getRetrofit().create(PokeApiService.class);
-        final int pokeNum = pokeUri.getPokemonNum(pokeUri);
-        Call<Pokemon> pokemonCall = pokeApiService.getPokemon(pokeNum);
-        final Context context = this;
-        pokemonCall.enqueue(new Callback<Pokemon>() {
-            @Override
-            public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
-                final Pokemon pokemon = response.body();
-                List<SpriteUri> spriteUris = pokemon.getSpriteUris();
-                SpriteUri lastSpriteUri;
-                if(spriteUris.size() != 0) {
-                    lastSpriteUri = spriteUris.get(spriteUris.size() - 1);
-                    Call<Sprite> pokeCallSprite = pokeApiService.getSprite(lastSpriteUri.getResourceUri().substring(1));
-                    pokeCallSprite.enqueue(new Callback<Sprite>() {
-                        @Override
-                        public void onResponse(Call<Sprite> call, Response<Sprite> response) {
-                            Sprite sprite = response.body();
-                            String spriteUri = sprite.getImage();
-                            try {
-                                Bitmap pokemonImage = Picasso.with(context).load("https://pokeapi.co" + spriteUri).get();
-                                mPokeImages.put(pokeNum, pokemonImage);
-                            } catch (IOException ignored) {
-
-                            }
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<Sprite> call, Throwable t) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Pokemon> call, Throwable t) {
-
-            }
-        });
-    }
-
     @Override
-    public void onPokemonSelected(Pokemon pokemon, String pokeSprite) {
+    public void onPokemonSelected(Pokemon pokemon) {
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_layout, PokemonDetailsFragment.newInstance(pokemon, pokeSprite), "detailsFragment")
+                .replace(R.id.main_layout, PokemonDetailsFragment.newInstance(pokemon, this), "detailsFragment")
                 .addToBackStack(null)
                 .commit();
 

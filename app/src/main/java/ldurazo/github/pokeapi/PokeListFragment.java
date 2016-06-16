@@ -103,7 +103,7 @@ public class PokeListFragment extends android.support.v4.app.Fragment {
      */
     public interface OnPokemonSelected {
         // TODO: Update argument type and name
-        void onPokemonSelected(Pokemon pokemon, String pokeSprite);
+        void onPokemonSelected(Pokemon pokemon);
     }
 
 }

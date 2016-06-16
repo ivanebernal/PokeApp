@@ -64,24 +64,8 @@ public class PokemonAdapter extends RecyclerView.Adapter<ViewHolder>{
             @Override
             public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
                 final Pokemon pokemon = response.body();
-                List<SpriteUri> spriteUris = pokemon.getSpriteUris();
-                SpriteUri lastSpriteUri;
-                if(spriteUris.size() != 0){
-                    lastSpriteUri = spriteUris.get(spriteUris.size()-1);
-                    Call<Sprite> pokeCallSprite = pokeApiService.getSprite(lastSpriteUri.getResourceUri().substring(1));
-                    pokeCallSprite.enqueue(new Callback<Sprite>() {
-                        @Override
-                        public void onResponse(Call<Sprite> call, Response<Sprite> response) {
-                            holder.setData(pokemon.getName(), response.body().getImage());
+                            holder.setData(pokemon.getName(), response.body().getNationalId(), mContext);
                         }
-
-                        @Override
-                        public void onFailure(Call<Sprite> call, Throwable t) {
-                            t.getCause();
-                        }
-                    });
-                }
-            }
             @Override
             public void onFailure(Call<Pokemon> call, Throwable t) {
                 t.getCause();
@@ -107,25 +91,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<ViewHolder>{
             @Override
             public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
                 final Pokemon pokemon = response.body();
-                List<SpriteUri> spriteUris = pokemon.getSpriteUris();
-                SpriteUri lastSpriteUri;
-                if(spriteUris.size() != 0){
-                    lastSpriteUri = spriteUris.get(spriteUris.size()-1);
-                    Call<Sprite> pokeCallSprite = pokeApiService.getSprite(lastSpriteUri.getResourceUri().substring(1));
-                    pokeCallSprite.enqueue(new Callback<Sprite>() {
-                        @Override
-                        public void onResponse(Call<Sprite> call, Response<Sprite> response) {
-                            String sprite = response.body().getImage();
-                            mListener.onPokemonSelected(pokemon, sprite);
-                        }
-                        @Override
-                        public void onFailure(Call<Sprite> call, Throwable t) {
-                            t.getCause();
-                        }
-                    });
-                }else{
-                    mListener.onPokemonSelected(pokemon, null);
-                }
+                            mListener.onPokemonSelected(pokemon);
             }
             @Override
             public void onFailure(Call<Pokemon> call, Throwable t) {
@@ -137,6 +103,6 @@ public class PokemonAdapter extends RecyclerView.Adapter<ViewHolder>{
     @Override
     public void onViewRecycled(ViewHolder holder) {
         super.onViewRecycled(holder);
-        holder.setData("", null);
+        holder.setData("", 0, mContext);
     }
 }

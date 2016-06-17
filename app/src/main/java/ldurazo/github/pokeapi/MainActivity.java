@@ -8,7 +8,9 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.LruCache;
+import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 
 import com.squareup.picasso.Picasso;
 
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements PokeListFragment.
         //TODO: Loading screen while images are being downloaded (use onProgressUpdate)
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        final ProgressBar spinner = (ProgressBar) findViewById(R.id.spinner);
         final Pokedex pokedex = new Pokedex();
         final PokeApiService pokeApiService = mPokeApiTransport.getRetrofit().create(PokeApiService.class);
         Call<Pokedex> pokedexCall = pokeApiService.getPokedex();
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements PokeListFragment.
                 pokedex.setResourceUri(response.body().getResourceUri());
                 Collections.sort(pokedex.getPokemonUri());
                 pokeFileDownloader.execute(pokedex.getPokemonUri());
+                spinner.setVisibility(View.GONE);
                 getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.main_layout, PokeListFragment.newInstance(pokedex), "pokemonList" )

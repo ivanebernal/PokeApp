@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.LruCache;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 import com.squareup.picasso.Picasso;
@@ -34,22 +35,19 @@ import retrofit2.Retrofit;
 public class MainActivity extends AppCompatActivity implements PokeListFragment.OnPokemonSelected, PokemonDetailsFragment.OnFragmentInteractionListener {
 
     private final PokeApiTransport mPokeApiTransport = new PokeApiTransport();
-    public static LruCache<Integer, Bitmap> mPokeImages;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
-
-        //TODO: Loading screen while images are being downloaded (use onProgressUpdate)
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final ProgressBar spinner = (ProgressBar) findViewById(R.id.spinner);
-        final Pokedex pokedex = new Pokedex();
         final PokeApiService pokeApiService = mPokeApiTransport.getRetrofit().create(PokeApiService.class);
         Call<Pokedex> pokedexCall = pokeApiService.getPokedex();
         final CacheFiller.PokemonResourcesDownloader pokeFileDownloader = new CacheFiller.PokemonResourcesDownloader(this);
         pokedexCall.enqueue(new Callback<Pokedex>() {
             @Override
             public void onResponse(Call<Pokedex> call, Response<Pokedex> response) {
+                Pokedex pokedex = new Pokedex();
                 pokedex.setCreated(response.body().getCreated());
                 pokedex.setModified(response.body().getModified());
                 pokedex.setName(response.body().getName());
@@ -61,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements PokeListFragment.
                 getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.main_layout, PokeListFragment.newInstance(pokedex), "pokemonList" )
-                            .commit();
+                            .commitAllowingStateLoss();
             }
 
             @Override
@@ -71,19 +69,17 @@ public class MainActivity extends AppCompatActivity implements PokeListFragment.
         });
 
     }
+
     @Override
     public void onPokemonSelected(Pokemon pokemon) {
-
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.main_layout, PokemonDetailsFragment.newInstance(pokemon, this), "detailsFragment")
                 .addToBackStack(null)
                 .commitAllowingStateLoss();
-
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
     }
 }

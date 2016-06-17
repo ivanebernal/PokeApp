@@ -18,6 +18,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:gravity="center"
+        android:textColor="#FFFFFF"
         android:layout_alignBottom="@id/grid_poke_image"
         android:id="@+id/pokemon_name"/>
 

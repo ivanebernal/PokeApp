@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import java.io.Console;
@@ -31,18 +33,17 @@ import ldurazo.github.pokeapi.Models.PokemonUri;
 public class CacheFiller {
 
     public static class PokemonResourcesDownloader extends AsyncTask<List<PokemonUri>, Integer, Void>{
-
-        private Context mContext;
+        private WindowManager wm;
         private ContextWrapper cw;
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Toast.makeText(mContext, "Files saved", Toast.LENGTH_SHORT).show();
         }
 
         public PokemonResourcesDownloader(Context context){
-            mContext = context;
             cw = new ContextWrapper(context);
+            wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
         }
 
         @Override

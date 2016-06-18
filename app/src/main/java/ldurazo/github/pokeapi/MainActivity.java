@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.LruCache;
@@ -20,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import ldurazo.github.pokeapi.Adapters.PokemonSwipeAdapter;
 import ldurazo.github.pokeapi.Models.Pokedex;
 import ldurazo.github.pokeapi.Models.Pokemon;
 import ldurazo.github.pokeapi.Models.PokemonUri;

@@ -82,7 +82,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<ViewHolder>{
             @Override
             public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
                 final Pokemon pokemon = response.body();
-                            mListener.onPokemonSelected(pokemon);
+                mListener.onPokemonSelected(pokemon);
             }
             @Override
             public void onFailure(Call<Pokemon> call, Throwable t) {

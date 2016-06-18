@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RawRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ import java.util.List;
 
 import ldurazo.github.pokeapi.Adapters.AbilityAdapter;
 import ldurazo.github.pokeapi.Adapters.MovementAdapter;
+import ldurazo.github.pokeapi.Adapters.PokemonSwipeAdapter;
 import ldurazo.github.pokeapi.Models.Ability;
 import ldurazo.github.pokeapi.Models.Move;
 import ldurazo.github.pokeapi.Models.Pokemon;
@@ -57,7 +59,6 @@ public class PokemonDetailsFragment extends Fragment {
     private static List<Move> mPokemonMoves;
     private static Context mContext;
     private static String mPokemonNumber;
-    private static MediaPlayer mCryPlayer;
     private static String mPokemonNumberCry;
 
     // TODO: Rename and change types of parameters
@@ -76,10 +77,7 @@ public class PokemonDetailsFragment extends Fragment {
         mPokemonTypes = pokemon.getTypes();
         mPokemonMoves = pokemon.getMoves();
         mContext = context;
-        mPokemonNumber = pokemon.getNationalId().toString();
-        if(mPokemonNumber.length() == 2) mPokemonNumberCry = "0" + mPokemonNumber;
-        if(mPokemonNumber.length() == 1) mPokemonNumberCry = "00" + mPokemonNumber;
-        if(mPokemonNumber.length() == 3) mPokemonNumberCry = mPokemonNumber;
+
 
         return fragment;
     }
@@ -95,47 +93,8 @@ public class PokemonDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_pokemon_details, container, false);
-        TextView nameTextView = (TextView) view.findViewById(R.id.pokemon_name_detail);
-        ListView abilitiesListView = (ListView) view.findViewById(R.id.abilities_list);
-        ListView movementsListView = (ListView) view.findViewById(R.id.movements_list);
-        LinearLayout typesListView = (LinearLayout) view.findViewById(R.id.types_view);
-        ImageView pokeSpriteView = (ImageView) view.findViewById(R.id.sprite);
-        pokeSpriteView.setOnClickListener(new View.OnClickListener() {
-            @TargetApi(Build.VERSION_CODES.KITKAT)
-            @Override
-            public void onClick(View v) {
-                int cryResId = 0;
-                try {
-                    Field cryResField = R.raw.class.getDeclaredField("r"+ mPokemonNumberCry);
-                    cryResId = cryResField.getInt(cryResField);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-                if(cryResId != 0){
-                    mCryPlayer = MediaPlayer.create(view.getContext(), cryResId);
-                    mCryPlayer.start();
-                }
-            }
-        });
-        for(Type type : mPokemonTypes){
-            TextView typeTextView = new TextView(view.getContext());
-            typeTextView.setText(type.getName());
-            typeTextView.setLayoutParams(new TableLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-            typeTextView.setTextSize(20);
-            typeTextView.setGravity(Gravity.CENTER);
-            typesListView.addView(typeTextView);
-        }
-        Bitmap pokeImage = getPokeImage(mPokemonNumber + ".png");
-        if(pokeImage == null){
-            Picasso.with(view.getContext()).load(R.drawable.no_poke_symbol).resize(240,240).into(pokeSpriteView);
-        }else{
-            pokeSpriteView.setImageBitmap(pokeImage);
-        }
-
-        nameTextView.setText(mPokemonName);
-        Context context = view.getContext();
-        abilitiesListView.setAdapter(new AbilityAdapter(mPokemonAbilities, context));
-        movementsListView.setAdapter(new MovementAdapter(mPokemonMoves, context));
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.pokemon_viewpager);
+        viewPager.setAdapter(new PokemonSwipeAdapter(getFragmentManager(), mContext, view));
         return view;
     }
 
@@ -161,11 +120,6 @@ public class PokemonDetailsFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-        if(mCryPlayer!=null) {
-            mCryPlayer.reset();
-            mCryPlayer.release();
-            mCryPlayer = null;
-        }
     }
 
     /**
@@ -183,13 +137,5 @@ public class PokemonDetailsFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public Bitmap getPokeImage(String pokeFileName){
-        ContextWrapper cw = new ContextWrapper(mContext);
-        try{
-            File f = new File(cw.getFilesDir(), pokeFileName);
-            return BitmapFactory.decodeStream(new FileInputStream(f));
-        }catch (Exception e){
-            return null;
-        }
-    }
+
 }

@@ -127,7 +127,7 @@ public class PokemonDetailsFragment extends Fragment {
         }
         Bitmap pokeImage = getPokeImage(mPokemonNumber + ".png");
         if(pokeImage == null){
-            Picasso.with(view.getContext()).load(R.drawable.no_poke_symbol).resize(480,480).into(pokeSpriteView);
+            Picasso.with(view.getContext()).load(R.drawable.no_poke_symbol).resize(240,240).into(pokeSpriteView);
         }else{
             pokeSpriteView.setImageBitmap(pokeImage);
         }

@@ -1,9 +1,12 @@
 package ldurazo.github.pokeapi.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Evolution {
+public class Evolution implements Parcelable {
 
     @SerializedName("level")
     @Expose
@@ -17,6 +20,24 @@ public class Evolution {
     @SerializedName("to")
     @Expose
     private String to;
+
+    protected Evolution(Parcel in) {
+        method = in.readString();
+        resourceUri = in.readString();
+        to = in.readString();
+    }
+
+    public static final Creator<Evolution> CREATOR = new Creator<Evolution>() {
+        @Override
+        public Evolution createFromParcel(Parcel in) {
+            return new Evolution(in);
+        }
+
+        @Override
+        public Evolution[] newArray(int size) {
+            return new Evolution[size];
+        }
+    };
 
     /**
      *
@@ -90,4 +111,16 @@ public class Evolution {
         this.to = to;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(method);
+        dest.writeString(resourceUri);
+        dest.writeString(to);
+        dest.writeInt(level);
+    }
 }

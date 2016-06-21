@@ -34,7 +34,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class MainActivity extends AppCompatActivity implements PokeListFragment.OnPokemonSelected, PokemonDetailsFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements PokeListFragment.OnPokemonSelected, PokemonDetailsFragment.OnFragmentInteractionListener, PokeViewPagerFragment.OnFragmentInteractionListener {
 
     private final PokeApiTransport mPokeApiTransport = new PokeApiTransport();
 
@@ -63,20 +63,18 @@ public class MainActivity extends AppCompatActivity implements PokeListFragment.
                             .replace(R.id.main_layout, PokeListFragment.newInstance(pokedex), "pokemonList" )
                             .commitAllowingStateLoss();
             }
-
             @Override
             public void onFailure(Call<Pokedex> call, Throwable t) {
                 t.getCause();
             }
         });
-
     }
 
     @Override
-    public void onPokemonSelected(Pokemon pokemon) {
+    public void onPokemonSelected(int pokeNum) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_layout, PokemonDetailsFragment.newInstance(pokemon, this), "detailsFragment")
+                .replace(R.id.main_layout, PokemonDetailsFragment.newInstance(this, pokeNum), "detailsFragment")
                 .addToBackStack(null)
                 .commitAllowingStateLoss();
     }

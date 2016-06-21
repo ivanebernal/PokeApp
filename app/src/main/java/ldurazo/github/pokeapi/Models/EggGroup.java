@@ -1,9 +1,12 @@
 package ldurazo.github.pokeapi.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class EggGroup {
+public class EggGroup implements Parcelable {
 
     @SerializedName("name")
     @Expose
@@ -11,6 +14,23 @@ public class EggGroup {
     @SerializedName("resource_uri")
     @Expose
     private String resourceUri;
+
+    protected EggGroup(Parcel in) {
+        name = in.readString();
+        resourceUri = in.readString();
+    }
+
+    public static final Creator<EggGroup> CREATOR = new Creator<EggGroup>() {
+        @Override
+        public EggGroup createFromParcel(Parcel in) {
+            return new EggGroup(in);
+        }
+
+        @Override
+        public EggGroup[] newArray(int size) {
+            return new EggGroup[size];
+        }
+    };
 
     /**
      *
@@ -48,4 +68,14 @@ public class EggGroup {
         this.resourceUri = resourceUri;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(resourceUri);
+    }
 }

@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -42,7 +43,6 @@ import ldurazo.github.pokeapi.PokeApiService.PokeApiService;
 import ldurazo.github.pokeapi.Transport.PokeApiTransport;
 import retrofit2.Retrofit;
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -52,40 +52,29 @@ import retrofit2.Retrofit;
  * create an instance of this fragment.
  */
 public class PokemonDetailsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    private static String mPokemonName;
-    private static List<Ability> mPokemonAbilities;
-    private static List<Type> mPokemonTypes;
-    private static List<Move> mPokemonMoves;
     private static Context mContext;
-    private static String mPokemonNumber;
-    private static String mPokemonNumberCry;
-
-    // TODO: Rename and change types of parameters
-
     private OnFragmentInteractionListener mListener;
+    private static int mPokeNum;
 
     public PokemonDetailsFragment() {
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
-    public static PokemonDetailsFragment newInstance(Pokemon pokemon, Context context) {
+    public static PokemonDetailsFragment newInstance(Context context, int pokeNum) {
         PokemonDetailsFragment fragment = new PokemonDetailsFragment();
-        mPokemonName = pokemon.getName();
-        mPokemonAbilities = pokemon.getAbilities();
-        mPokemonTypes = pokemon.getTypes();
-        mPokemonMoves = pokemon.getMoves();
         mContext = context;
-
-
+        mPokeNum = pokeNum;
         return fragment;
     }
-
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -94,7 +83,7 @@ public class PokemonDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_pokemon_details, container, false);
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.pokemon_viewpager);
-        viewPager.setAdapter(new PokemonSwipeAdapter(getFragmentManager(), mContext, view));
+        viewPager.setAdapter(new PokemonSwipeAdapter(getChildFragmentManager(),mContext, mPokeNum));
         return view;
     }
 
@@ -136,6 +125,4 @@ public class PokemonDetailsFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-
-
 }

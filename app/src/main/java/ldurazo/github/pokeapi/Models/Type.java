@@ -1,9 +1,12 @@
 package ldurazo.github.pokeapi.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Type {
+public class Type implements Parcelable {
 
     @SerializedName("name")
     @Expose
@@ -11,6 +14,23 @@ public class Type {
     @SerializedName("resource_uri")
     @Expose
     private String resourceUri;
+
+    protected Type(Parcel in) {
+        name = in.readString();
+        resourceUri = in.readString();
+    }
+
+    public static final Creator<Type> CREATOR = new Creator<Type>() {
+        @Override
+        public Type createFromParcel(Parcel in) {
+            return new Type(in);
+        }
+
+        @Override
+        public Type[] newArray(int size) {
+            return new Type[size];
+        }
+    };
 
     /**
      *
@@ -48,4 +68,14 @@ public class Type {
         this.resourceUri = resourceUri;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(resourceUri);
+    }
 }

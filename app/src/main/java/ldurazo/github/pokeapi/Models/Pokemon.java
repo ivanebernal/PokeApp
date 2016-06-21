@@ -1,11 +1,14 @@
 package ldurazo.github.pokeapi.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Pokemon {
+public class Pokemon implements Parcelable {
 
     @SerializedName("abilities")
     @Expose
@@ -97,6 +100,31 @@ public class Pokemon {
     @SerializedName("weight")
     @Expose
     private String weight;
+
+    protected Pokemon(Parcel in) {
+        created = in.readString();
+        evYield = in.readString();
+        growthRate = in.readString();
+        height = in.readString();
+        maleFemaleRatio = in.readString();
+        modified = in.readString();
+        name = in.readString();
+        resourceUri = in.readString();
+        species = in.readString();
+        weight = in.readString();
+    }
+
+    public static final Creator<Pokemon> CREATOR = new Creator<Pokemon>() {
+        @Override
+        public Pokemon createFromParcel(Parcel in) {
+            return new Pokemon(in);
+        }
+
+        @Override
+        public Pokemon[] newArray(int size) {
+            return new Pokemon[size];
+        }
+    };
 
     /**
      *
@@ -638,4 +666,77 @@ public class Pokemon {
         this.weight = weight;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    private void readFromParcel(Parcel in){
+        created = in.readString();
+        evYield = in.readString();
+        growthRate = in.readString();
+        height = in.readString();
+        maleFemaleRatio = in.readString();
+        modified = in.readString();
+        name = in.readString();
+        resourceUri = in.readString();
+        species = in.readString();
+        weight = in.readString();
+        in.readTypedList(abilities, Ability.CREATOR);
+        in.readTypedList(descriptions, Description.CREATOR);
+        in.readTypedList(eggGroups, EggGroup.CREATOR);
+        in.readTypedList(evolutions, Evolution.CREATOR);
+        in.readTypedList(moves, Move.CREATOR);
+        in.readTypedList(spriteUris, SpriteUri.CREATOR);
+        in.readTypedList(types, Type.CREATOR);
+        attack = in.readInt();
+        catchRate= in.readInt();
+        defense = in.readInt();
+        eggCycles = in.readInt();
+        exp = in.readInt();
+        happiness = in.readInt();
+        hp = in.readInt();
+        nationalId = in.readInt();
+        pkdxId = in.readInt();
+        spAtk = in.readInt();
+        spDef = in.readInt();
+        speed = in.readInt();
+        total = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeString(created);
+        dest.writeString(evYield);
+        dest.writeString(growthRate);
+        dest.writeString(height);
+        dest.writeString(maleFemaleRatio);
+        dest.writeString(modified);
+        dest.writeString(name);
+        dest.writeString(resourceUri);
+        dest.writeString(species);
+        dest.writeString(weight);
+        dest.writeTypedList(abilities);
+        dest.writeTypedList(descriptions);
+        dest.writeTypedList(eggGroups);
+        dest.writeTypedList(evolutions);
+        dest.writeTypedList(moves);
+        dest.writeTypedList(spriteUris);
+        dest.writeTypedList(types);
+        dest.writeInt(attack);
+        dest.writeInt(catchRate);
+        dest.writeInt(defense);
+        dest.writeInt(eggCycles);
+        dest.writeInt(exp);
+        dest.writeInt(happiness);
+        dest.writeInt(hp);
+        dest.writeInt(nationalId);
+        dest.writeInt(pkdxId);
+        dest.writeInt(spAtk);
+        dest.writeInt(spDef);
+        dest.writeInt(speed);
+        dest.writeInt(total);
+
+    }
 }

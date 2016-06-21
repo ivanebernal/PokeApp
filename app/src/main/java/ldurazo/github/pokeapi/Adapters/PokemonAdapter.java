@@ -77,19 +77,8 @@ public class PokemonAdapter extends RecyclerView.Adapter<ViewHolder>{
     }
 
     public void onPokemonClicked(int pokeNum){
-        final Call<Pokemon> pokeCall = pokeApiService.getPokemon(pokeNum);
-        pokeCall.enqueue(new Callback<Pokemon>() {
-            @Override
-            public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
-                final Pokemon pokemon = response.body();
-                mListener.onPokemonSelected(pokemon);
+                mListener.onPokemonSelected(pokeNum);
             }
-            @Override
-            public void onFailure(Call<Pokemon> call, Throwable t) {
-                t.getCause();
-            }
-        });
-    }
 
     @Override
     public void onViewRecycled(ViewHolder holder) {

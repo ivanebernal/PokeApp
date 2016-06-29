@@ -41,8 +41,6 @@ public class ViewHolder extends RecyclerView.ViewHolder {
             mImageView.setImageResource(R.drawable.no_poke_symbol);
         }
         //TODO: load images from the internet if they don't exist in the files directory
-
-        //TODO: images are being painted too slow and sometimes show wrong pokemon
     }
 
     public Bitmap getPokeImage(String pokeFileName, Context context){
